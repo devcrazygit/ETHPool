@@ -85,10 +85,17 @@ contract ETHPool is Ownable {
     /**
      * @dev get holder's current balance in the pool
      */
-    function balance() public view onlyHolder(msg.sender) returns (uint256) {
-        return
-            _allDeposits[msg.sender].amount +
-            _allDeposits[msg.sender].rewardAccum;
+    function balanceOf(address holder)
+        public
+        view
+        onlyHolder(holder)
+        returns (uint256)
+    {
+        return _allDeposits[holder].amount + _allDeposits[holder].rewardAccum;
+    }
+
+    function getTotalHolderDeposit() public view returns (uint256) {
+        return _totalHolderDeposit;
     }
 
     /**
