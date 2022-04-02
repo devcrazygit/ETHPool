@@ -1,4 +1,5 @@
 ![CI status](https://github.com/devcrazygit/ETHPool/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/devcrazygit/ETHPool/branch/master/graph/badge.svg)](https://codecov.io/gh/devcrazygit/ETHPool)
 
 # About
 
