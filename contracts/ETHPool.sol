@@ -31,6 +31,8 @@ contract ETHPool is Ownable {
   // keep track of the reward time to ensure reward not to deposit before a week
   uint256 private _lastRewardTime;
 
+  event WithdrawSucceed(address holder, uint256 amount);
+
   constructor(string memory _name) {
     name = _name;
     _lastRewardTime = 0;
@@ -68,6 +70,7 @@ contract ETHPool is Ownable {
         _allDeposits[_holders[i]].amount.mul(msg.value)
       ).div(_totalHolderDeposit);
     }
+    _lastRewardTime = block.timestamp;
   }
 
   /**
@@ -81,13 +84,9 @@ contract ETHPool is Ownable {
   /**
    * @dev get holder's current balance in the pool
    */
-  function balanceOf(address holder)
-    public
-    view
-    onlyHolder(holder)
-    returns (uint256)
-  {
-    return _allDeposits[holder].amount + _allDeposits[holder].rewardAccum;
+  function balance() public view onlyHolder(msg.sender) returns (uint256) {
+    return
+      _allDeposits[msg.sender].amount + _allDeposits[msg.sender].rewardAccum;
   }
 
   /**
@@ -105,17 +104,15 @@ contract ETHPool is Ownable {
   /**
    * @dev withdraw eth from the pool
    */
-  function withdraw() public {
-    require(_allDeposits[msg.sender].index > 0, "You are not a holder");
+  function withdraw() public onlyHolder(msg.sender) {
     uint256 withdrawAmount = _allDeposits[msg.sender].amount +
       _allDeposits[msg.sender].rewardAccum;
 
-    require(_totalHolderDeposit > withdrawAmount, "Not enough ethers in pool");
-
-    _totalHolderDeposit -= withdrawAmount;
+    _totalHolderDeposit -= _allDeposits[msg.sender].amount;
     _removeHolder(_allDeposits[msg.sender].index);
     delete _allDeposits[msg.sender];
     require(payable(msg.sender).send(withdrawAmount), "Withdraw failed");
+    emit WithdrawSucceed(msg.sender, withdrawAmount);
   }
 
   function _removeHolder(uint256 index) private {
