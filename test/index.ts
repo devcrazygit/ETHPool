@@ -6,7 +6,6 @@ import { ethers } from "hardhat";
 let ETHPool: Contract;
 let team: SignerWithAddress;
 let userA: SignerWithAddress;
-let userB: SignerWithAddress;
 let nonHolder: SignerWithAddress;
 
 const depositA1 = BigNumber.from("10000000000000000");
@@ -19,7 +18,7 @@ describe("ETHPool", function () {
     const ETHPoolFactory = await ethers.getContractFactory(POOL_NAME);
     ETHPool = await ETHPoolFactory.deploy("ETHPool");
     await ETHPool.deployed();
-    [team, userA, userB, nonHolder] = await ethers.getSigners();
+    [team, userA, nonHolder] = await ethers.getSigners();
   });
   describe("When deployed first", function () {
     it("Should set the right owner", async function () {
