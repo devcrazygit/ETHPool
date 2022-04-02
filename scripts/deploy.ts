@@ -8,7 +8,7 @@ import { ethers } from "hardhat";
 
 async function main() {
   const ETHPoolFactory = await ethers.getContractFactory("ETHPool");
-  const ETHPool = await ETHPoolFactory.deploy("ETH POOL");
+  const ETHPool = await ETHPoolFactory.deploy("ETHPool");
   await ETHPool.deployed();
   console.log("ETH POOL address: ", ETHPool.address);
 }

@@ -13,6 +13,7 @@ const depositA1 = BigNumber.from("10000000000000000");
 const reward1 = BigNumber.from("11000000000000000");
 const reward2 = BigNumber.from("18000000000000000");
 const depositB1 = BigNumber.from("30000000000000000");
+const depositB2 = BigNumber.from("25600000000000000");
 
 describe("ETHPool", function () {
   const POOL_NAME = "ETHPool";
@@ -156,32 +157,54 @@ describe("ETHPool", function () {
                   .add(reward2.mul(depositA1).div(depositA1.add(depositB1)))
               );
           });
-          describe("When userA withdraw", function () {
+          describe("When userB deposit again", function () {
             beforeEach(async function () {
-              await ETHPool.connect(userA).withdraw();
+              await ETHPool.connect(userB).deposit({ value: depositB2 });
             });
-            it("Should decrease the pool volume to depositB1 + reward2 * depositB1 / (depositA1 + depositB1)", async function () {
+            it("Should userB's reward is the same as reward2 * depositB1 / (depositA1 + depositB1)", async function () {
+              expect(await ETHPool.getPendingReward(userB.address)).to.be.equal(
+                reward2.mul(depositB1).div(depositA1.add(depositB1))
+              );
+            });
+            it("Should increase pool volume to depositA1 + reward1 + depositB1 + reward2 + depositB2", async function () {
               expect(
                 await ethers.provider.getBalance(ETHPool.address)
               ).to.be.equal(
-                depositB1.add(
-                  reward2.mul(depositB1).div(depositA1.add(depositB1))
-                )
+                depositA1
+                  .add(reward1)
+                  .add(depositB1)
+                  .add(reward2)
+                  .add(depositB2)
               );
             });
-            it("Should reject withdraw again for userA", async function () {
-              await expect(
-                ETHPool.connect(userA).withdraw()
-              ).to.be.revertedWith("No such a holder");
-            });
-            describe("When userB withdraw", function () {
+
+            describe("When userA withdraw", function () {
               beforeEach(async function () {
-                await ETHPool.connect(userB).withdraw();
+                await ETHPool.connect(userA).withdraw();
               });
-              it("Should pool volume is zero", async function () {
+              it("Should decrease the pool volume to depositB2 + depositB1 + reward2 * depositB1 / (depositA1 + depositB1)", async function () {
                 expect(
                   await ethers.provider.getBalance(ETHPool.address)
-                ).to.be.equal(0);
+                ).to.be.equal(
+                  depositB2
+                    .add(depositB1)
+                    .add(reward2.mul(depositB1).div(depositA1.add(depositB1)))
+                );
+              });
+              it("Should reject withdraw again for userA", async function () {
+                await expect(
+                  ETHPool.connect(userA).withdraw()
+                ).to.be.revertedWith("No such a holder");
+              });
+              describe("When userB withdraw", function () {
+                beforeEach(async function () {
+                  await ETHPool.connect(userB).withdraw();
+                });
+                it("Should pool volume is zero", async function () {
+                  expect(
+                    await ethers.provider.getBalance(ETHPool.address)
+                  ).to.be.equal(0);
+                });
               });
             });
           });
