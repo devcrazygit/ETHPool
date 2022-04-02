@@ -32,6 +32,7 @@ jobs:
           node-version: 16.x
       # install dependencies using clean install to avoid package lock updates
       - run: npm ci
+      - run: cp .env.example .env
       - run: npm run lint
       - run: npm run build
       # run the tests

@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+import "@nomiclabs/hardhat-web3";
 
 dotenv.config();
 
@@ -19,9 +20,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+task("poolsize", "Prints a total amount of ETH held in the contract")
+  .addParam("address", "The contract's address")
+  .setAction(async ({ address }, { web3 }) => {
+    address = web3.utils.toChecksumAddress(address);
+    const balance = await web3.eth.getBalance(address);
+    console.log(web3.utils.fromWei(balance, "ether"), "ETH");
+  });
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
@@ -36,7 +43,9 @@ const config: HardhatUserConfig = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      ropsten: process.env.ETHERSCAN_API_KEY,
+    },
   },
 };
 
