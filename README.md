@@ -1,7 +1,7 @@
 ![CI status](https://github.com/devcrazygit/ETHPool/actions/workflows/main.yml/badge.svg)
 [![codecov](https://codecov.io/gh/devcrazygit/ETHPool/branch/master/graph/badge.svg)](https://codecov.io/gh/devcrazygit/ETHPool)
 
-# ETHPool - Smart Contract Challenge
+# ETHPool
 
 ETHPool provides a service where people can deposit ETH and they will receive weekly rewards. Users can take out their deposits along with their portion of rewards at any time. New rewards are deposited manually into the pool by the ETHPool team each week using a contract function.
 
